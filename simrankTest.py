@@ -1,58 +1,77 @@
+def random_walks(V,ii,jj,T,c):
+    from random import randint
+    a = ii
+    b = jj
+    for i in range(T):
+        if a == b:
+            return c**i
+        if len(V[a])==0 or len(V[b])==0:
+            return 0.0
+        a = V[a][randint(0,len(V[a])-1)]
+        b = V[b][randint(0,len(V[b])-1)]
+    return 0.0
+
+def RW_samples(V,ii,jj,S1,S2,c):
+    a = ii
+    b = jj
+    for i in range(len(S1)):
+        if a == b:
+            return c**i
+        if len(V[a])==0 or len(V[b])==0:
+            return 0.0
+        a = V[a][int(S1[i]*len(V[a]))]
+        b = V[b][int(S2[i]*len(V[b]))]
+    return 0.0
+
 def main():
 
-    # number of vectors
-    n = 100
-    # number of features
-    m = 1000
+    # number of nodes
+    n = 10
+    # probability of an edge
+    p = .1
+    # simrank constant
+    c = .7
     # sample size interval
-    si = 10
+    si = 500
     # max samples
-    ms = 200
+    ms = 10000
+    # max samples for exact solution
+    MS = 1000
+    # longest walk
+    T = 20
     # test rounds
     TR = 100
 
     from random import random
-    from random import normalvariate
     from random import randint
     from math import log
 
     max_error_array = [0.0 for i in range(ms//si)]
     Delta_array = [0.0 for i in range(ms//si)]
-    Delta2_array = [0.0 for i in range(ms//si)]
     for rr in range(TR):
-        # init the n vectors
+        # init the n nodes
         #print ('Initializing...')
+        d = 3  # small world param
         V = []
         for i in range(n):
-            v = [abs(normalvariate(0,1)) for kk in range(m)]
-            #v = [random() for kk in range(m)]
+            v = []
+            for j in range(n):
+                if random() < p or (abs(i-j)<d and i != j):
+                    v.append(j)
             V.append(v)
-
-        # normalize
-        #print ('Normalizing...')
-        for i in range(n):
-            norm = sum([item**2 for item in V[i]])**0.5
-            ratio = m**0.5 / norm
-            v_prime = [item*ratio for item in V[i]]
-            V[i] = v_prime
 
         # exact solution
         #print ('Computing the exact solution...')
-        maxProd = 0.0
+        
         ExactSim = [[0.0 for i in range(n)] for j in range(n)]
         for ii in range(n):
             for jj in range(ii+1, n):
-                for k in range(m):
-                    ExactSim[ii][jj] += V[ii][k] * V[jj][k]
-                    #if maxProd < V[ii][k] * V[jj][k]:
-                    #    maxProd = V[ii][k] * V[jj][k]
-                ExactSim[ii][jj] /= m
-        #print('Max fi: ', maxProd)
+                for k in range(MS):
+                    ExactSim[ii][jj] += random_walks(V,ii,jj,T,c)
+                ExactSim[ii][jj] /= MS
         
 
         # sampling and error analysis
-        S = {}
-        maxProd = 20.0
         Sim = [[0.0 for i in range(n)] for j in range(n)]
         fs2 = [[0.0 for i in range(n)] for j in range(n)]
         for i in range(ms//si):
@@ -60,17 +79,14 @@ def main():
             ell = 0.0
             j=0
             while j<si:
-                s = randint(0,m-1)
-                #if s in S:
-                #    continue
-                #S[s] = 1
+                S1 = [random() for mm in range(T)]
+                S2 = [random() for mm in range(T)]
                 j += 1
                 for ii in range(n):
                     for jj in range(ii+1, n):
-                        Sim[ii][jj] += V[ii][s] * V[jj][s]
-                        #if maxProd < V[ii][s] * V[jj][s]:
-                        #    maxProd = V[ii][s] * V[jj][s]
-                        fs2[ii][jj] += (V[ii][s] * V[jj][s])**2
+                        rw= RW_samples(V,ii,jj,S1,S2,c)
+                        Sim[ii][jj]+=rw
+                        fs2[ii][jj] += rw**2
                         if fs2[ii][jj] > ell:
                             ell = fs2[ii][jj]
             ell = ell**0.5
@@ -79,11 +95,7 @@ def main():
             delta = 0.0001
             MR = 4*ell/((i+1)*si)*(log(n))**0.5
             Delta = MR
-            Delta2 = MR  # old upper bound using m
-            M = maxProd
-            Delta += M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
-            M = m
-            Delta2 += M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
+            Delta += c*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/c)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
             
             
             # error
@@ -96,13 +108,11 @@ def main():
             max_error_array[i]+=max_error
             #print('Delta / #features: ', Delta/m)
             Delta_array[i]+=Delta
-            Delta2_array[i]+=Delta2
 
     for i in range(ms//si):
-        print((i+1)*si, '\t', max_error_array[i]/TR, '\t', Delta_array[i]/TR, '\t', Delta2_array[i]/TR)
+        print((i+1)*si, '\t', max_error_array[i]/TR, '\t', Delta_array[i]/TR)
 
-
+        
+    
 # test zone
 main()
-
-    
