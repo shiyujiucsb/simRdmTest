@@ -25,7 +25,7 @@ def main():
         dict = {}
         V = []
         n = 0
-        f = open('Email-Enron.txt','r')
+        f = open('Cit-HepPh.txt','r')
         for line in f:
             A = line.split()[0]
             B = line.split()[1]
@@ -102,12 +102,10 @@ def main():
             # theory error bound
             delta = 0.0001
             MR = 4*ell/((i+1)*si)*(log(n))**0.5
-            Delta = MR
-            Delta2 = MR  # old upper bound using m
             M = maxProd
-            Delta += M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
+            Delta = min([M*(((2*log(n)+log(1/delta))/(2*(i+1)*si))**0.5),MR+M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)])
             M = m
-            Delta2 += M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
+            Delta2 = min([M*(((2*log(n)+log(1/delta))/(2*(i+1)*si))**0.5),MR+M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)])
             
             
             # error

@@ -7,5 +7,5 @@ set xlabel '# samples'
 plot 'simrank_gplus_runtime.txt' using 1:2 title 'ego-Gplus' with linespoints pt 3, \
 	'simrank_twitter_runtime.txt' using 1:2 title 'ego-Twitter' with linespoints pt 4
 	
-set term x11
+set term windows
 set output

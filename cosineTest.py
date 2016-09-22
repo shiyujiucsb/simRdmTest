@@ -24,8 +24,8 @@ def main():
         #print ('Initializing...')
         V = []
         for i in range(n):
-            v = [abs(normalvariate(0,1)) for kk in range(m)]
-            #v = [random() for kk in range(m)]
+            #v = [abs(normalvariate(0,1)) for kk in range(m)]
+            v = [random() for kk in range(m)]
             V.append(v)
 
         # normalize
@@ -78,12 +78,10 @@ def main():
             # theory error bound
             delta = 0.0001
             MR = 4*ell/((i+1)*si)*(log(n))**0.5
-            Delta = MR
-            Delta2 = MR  # old upper bound using m
             M = maxProd
-            Delta += M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
+            Delta = min([M*(((2*log(n)+log(1/delta))/(2*(i+1)*si))**0.5),MR+M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)])
             M = m
-            Delta2 += M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
+            Delta2 = min([M*(((2*log(n)+log(1/delta))/(2*(i+1)*si))**0.5),MR+M*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/M)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)])
             
             
             # error

@@ -32,9 +32,9 @@ def main():
     # simrank constant
     c = .7
     # sample size interval
-    si = 500
+    si = 50
     # max samples
-    ms = 10000
+    ms = 1000
     # max samples for exact solution
     MS = 1000
     # longest walk
@@ -54,7 +54,7 @@ def main():
         dict = {}
         V = []
         n = 0
-        f = open('egoGplus.edges','r')
+        f = open('egoTwitter.edges','r')
         for line in f:
             A = line.split()[0]
             B = line.split()[1]
@@ -104,8 +104,7 @@ def main():
             # theory error bound
             delta = 0.0001
             MR = 4*ell/((i+1)*si)*(log(n))**0.5
-            Delta = MR
-            Delta += c*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/c)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)
+            Delta = min([c*(((2*log(n)+log(1/delta))/(2*(i+1)*si))**0.5), MR+ c*(1+ (8/((i+1)*si)*log(2/delta))**0.5+(8/((i+1)*si)*log(2/delta)+8*MR/c)**0.5)*((log(8/delta)/(2*(i+1)*si))**0.5)])
             
             
             # error

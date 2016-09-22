@@ -7,5 +7,5 @@ set xlabel '# samples'
 plot 'cos_arxiv_runtime.txt' using 1:2 title 'Cit-HepPh' with linespoints pt 3, \
 	'cos_email_runtime.txt' using 1:2 title 'Email-Enron' with linespoints pt 4
 	
-set term x11
+set term windows
 set output
