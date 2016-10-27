@@ -24,8 +24,8 @@ def main():
         #print ('Initializing...')
         V = []
         for i in range(n):
-            #v = [abs(normalvariate(0,1)) for kk in range(m)]
-            v = [random() for kk in range(m)]
+            v = [abs(normalvariate(0,1)) for kk in range(m)]
+            #v = [random() for kk in range(m)]
             V.append(v)
 
         # normalize
@@ -52,7 +52,7 @@ def main():
 
         # sampling and error analysis
         S = {}
-        maxProd = 20.0
+        maxProd = 20
         Sim = [[0.0 for i in range(n)] for j in range(n)]
         fs2 = [[0.0 for i in range(n)] for j in range(n)]
         for i in range(ms//si):
@@ -88,13 +88,13 @@ def main():
             max_error = 0.0
             for ii in range(n):
                 for jj in range(ii+1, n):
-                    if abs(Sim[ii][jj] - ExactSim[ii][jj]) > max_error:
+                    if abs(Sim[ii][jj]/((i+1)*si) - ExactSim[ii][jj]) > max_error:
                         max_error = abs(Sim[ii][jj]/((i+1)*si) - ExactSim[ii][jj])
             #print('Max Error: ', max_error)
-            max_error_array[i]+=max_error
+            max_error_array[i]+=max_error/m
             #print('Delta / #features: ', Delta/m)
-            Delta_array[i]+=Delta
-            Delta2_array[i]+=Delta2
+            Delta_array[i]+=Delta/m
+            Delta2_array[i]+=Delta2/m
 
     for i in range(ms//si):
         print((i+1)*si, '\t', max_error_array[i]/TR, '\t', Delta_array[i]/TR, '\t', Delta2_array[i]/TR)
